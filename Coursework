@@ -1,0 +1,127 @@
+#!/bin/bash
+: '
+Bankers algorithm for Deadlock Avoidance
+'
+: '
+Petar Atanasov
+  M00916537
+  '
+
+#number of processes
+  n_of_processes=5
+
+#number of resources
+  m_of_resources=3
+
+  #get the values for allocation for safe state
+ allocation=(            #here will be the values where deadlock occur
+         [0]="0 1 0"     #3 2 0
+         [1]="2 0 0"     #2 0 2
+         [2]="3 0 2"     #3 0 2
+         [3]="2 1 1"     #5 1 1
+         [4]="0 0 2"     #0 0 2
+         )
+ #get the values for maximum for safe state
+ maximum=(               #here will be the values where deadlock occur
+         [0]="7 5 3"     #7 5 3
+         [1]="3 2 2"     #13 2 2 
+         [2]="9 0 2"     #9 0 2
+         [3]="4 2 2"     #10 4 6
+         [4]="5 3 3"     #5 3 3
+         )
+# set the total of the bank 
+totalOfBank=50
+#the available values for the banker's algorithm 
+ current_Available=( $totalOfBank $totalOfBank $totalOfBank )
+
+#create a finish array 
+declare -a finish
+# create an array for safe sequence
+declare -a safe
+# initilise the finish array 
+for (( i = 0 ; i < ${n_of_processes[@]} ; i++ ));
+        do
+                finish[$i]=0
+        done
+# create a Need function to get the needed values for the algorithm
+need() {
+        for (( i = 0 ; i < ${n_of_processes[@]} ; i++ ));
+        do
+                for (( j = 0 ; j < ${m_of_resources[@]} ; j++ ));
+                do
+                        request_Need[$i,$j]= $(( m_of_resources[$j] - allocation[$j] ))
+                done
+        done
+}
+
+need
+
+# check if the bank has enought money after the loan is granted 
+banksMoney() {
+        local varLoan=$1
+        local varBankMoney=$(( ${current_Available[0]} - $varLoan ))
+if [ $varBankMoney -ge $varLoan ];
+        then
+                return 0
+        else
+                return 1
+        fi
+}
+# gets the flow of the index
+keep_index=0
+
+#create the safety algorithm  
+for ((  k = 0 ; k < $n_of_processes ; k++  ))
+do
+        for (( i = 0 ; i < $n_of_processes ; i++  ))
+        do
+                #check the finish state if is finished  
+                if [ ${finish[$i]} -eq 0 ];
+                then
+                        #set a local boolean
+                       varBool=1
+                       for (( j = 0 ; j < $m_of_resources ; j++ ))
+                       do
+                               #check if the recources are enough to proceed further    
+                               if [ ${request_Need[$i,$j]} -gt ${current_Available[$j]} ];
+                               then
+                                       varBool=0
+                                       break
+                               fi
+                       done
+                        # after the remaining need check if resources are available     
+                        if [ $varBool -eq 1 ];
+		then
+                                #if so confirm that the loan can be granted
+                                banksMoney ${allocation[$i,0]}
+
+                                : '
+                                if it is equals 0 exit and set the safe sequence array with the index
+                                and assing variable i to it
+                                '
+                                if [ $? -eq 0 ];
+                                then
+                                safe[$keep_index]=$i
+
+                                #then increment the index
+                                (( keep_index++ ))
+
+                                for (( t = 0 ; t < $m_of_resources ; t++  ))
+                                do
+                                        #allocate the resources
+                                        $current_Available[$t]= $(( current_Available[$t] + ${allocation[$i,$t]} ))
+                                done
+                                        # the process is finished
+                                        finish[$i]=1
+                                fi
+                        fi
+                fi
+        done
+done
+
+echo "The SAFE SEQUENCE is: "
+for (( i = 0 ; i < $n_of_processes - 1 ; i++ ))
+do
+        echo " P -> ${safe[$i]}"
+done
+echo " P -> ${safe[$n_of_processes - 1]}"
