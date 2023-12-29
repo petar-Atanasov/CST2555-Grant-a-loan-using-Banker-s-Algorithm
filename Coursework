@@ -70,7 +70,7 @@ if [ $varBankMoney -ge $varLoan ];
 # gets the flow of the index
 keep_index=0
 
-#create the safety algorithm  
+#create the banker's algorithm  
 for ((  k = 0 ; k < $n_of_processes ; k++  ))
 do
         for (( i = 0 ; i < $n_of_processes ; i++  ))
