@@ -59,6 +59,7 @@ bool Safe() {
     int request_Need[n_of_processes][n_of_resources] = {0};
     need(request_Need);
 
+    // step 1
 
     // initialize work and set it to current available 
     // then loop through the resources
@@ -80,6 +81,8 @@ bool Safe() {
     // initialize a safe sequence value 
     int safeSeq[n_of_processes];
 
+    
+
     while( count < n_of_processes) {
         // set a boolean value for founded sequence 
         bool found = false;
@@ -87,14 +90,36 @@ bool Safe() {
             if(!copyOfFinish[i]){
                 // set a boolean which allow the proceses to be executed
                 bool exProcess = true;
+                
+                //step 2
+
                 //check if the recources are enough to proceed further
                 for ( int j = 0; j < n_of_resources; j++){
                     if(request_Need[i][j] > work[j]){
-
+                        exProcess = false;
+                        break;
                     }
                 }
-                
+                // step 3 
+                //after the remaining need check if resources are available
+                if (exProcess){
+                    for ( int k = 0; k < n_of_processes; k++){
+                        // allocate the resources
+                        work[k] += allocation[i][k];
+                    }
+                    // go to step 2 
+
+                    // the process is finished
+                    copyOfFinish[i] = true;
+                    // set the safe sequence array with the count increment
+                    //and assing variable i to it
+                    safeSeq[count++] = i;
+                    found = true;
+                }
             }
+        }
+        if(!found){
+            return false;
         }
     }
 
