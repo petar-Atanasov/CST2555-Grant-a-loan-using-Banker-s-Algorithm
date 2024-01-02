@@ -93,7 +93,7 @@ bool Safe() {
 
                 //check if the recources are enough to proceed further
                 for (int j = 0; j < n_of_resources; j++){
-                    if(request_Need[i][j] >= work[j]){
+                    if(request_Need[i][j] > work[j]){
                         exProcess = false;
                         break;
                     }
@@ -116,10 +116,16 @@ bool Safe() {
                 }
             }
         }
-        //step 4 
         // if nothing is true set it to 0 
         if(!found) {
             return false;
+        }
+    }
+
+    for (int i = 0; i < n_of_processes; i++){
+        if(copyOfFinish[i] == false){
+            cout << "UNSAFE STATE!";
+            break;
         }
     }
     // print the output
