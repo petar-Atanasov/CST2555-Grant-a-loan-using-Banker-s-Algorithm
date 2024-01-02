@@ -19,22 +19,22 @@ const int totalOfBank = 50;
 
 //get the values for allocation for safe state
 int allocation[n_of_processes][n_of_resources] = { 
-    //here will be the values where deadlock occur  
-    {0, 1, 0},      //3 2 0
-    {2, 0, 0},      //2 0 2
-    {3, 0, 2},      //3 0 2
-    {2, 1, 1},      //5 1 1
-    {0, 0, 2}       //0 0 2
+                        //here will be the values where deadlock occur  
+    {0, 1, 0},//P0      //3, 2, 0
+    {2, 0, 0},//P1      //2, 0, 2
+    {3, 0, 2},//P2      //3, 0, 2
+    {2, 1, 1},//P3      //5, 1, 1
+    {0, 0, 2} //P4      //0, 0, 2
 };
 
 // get the values for maximum for safe state
 int maximum[n_of_processes][n_of_resources] = {
-    //here will be the values where deadlock occur
-    {7, 5, 3},      //7 5 3
-    {3, 2, 2},      //13 2 2 
-    {9, 0, 2},      //9 0 2
-    {4, 2, 2},      //10 4 6
-    {5, 3, 3}       //5 3 3
+                        //here will be the values where deadlock occur
+    {7, 5, 3},//P0      //7, 5, 3
+    {3, 2, 2},//P1      //13, 2, 2 
+    {9, 0, 2},//P2      //9, 0, 2
+    {4, 2, 2},//P3      //10, 4, 6
+    {5, 3, 3} //P4      //5, 3, 3
 };
 
 // get the available values for the banker's algorithm
@@ -69,8 +69,8 @@ bool Safe() {
     }
 
     // create a counter which will keep up with the function then 
-    //initialize a copy of finish and set the finish from above to it and loop throught it   
-
+    //initialize a copy of finish and set the finish from above to it and loop throught it    
+    
     int count = 0;
     
     bool copyOfFinish[n_of_processes];
@@ -121,7 +121,7 @@ bool Safe() {
             return false;
         }
     }
-
+    // step 4 
     for (int i = 0; i < n_of_processes; i++){
         if(copyOfFinish[i] == false){
             cout << "UNSAFE STATE!";
@@ -131,9 +131,9 @@ bool Safe() {
     // print the output
     cout << "The SAFE SEQUENCE is: "; 
     for (int i = 0; i < n_of_processes - 1; i++){
-        cout << " P -> " << safeSeq[i] << " ";
+        cout << " P" << safeSeq[i] << " ->";
     }
-    cout << " P -> " << safeSeq[n_of_processes - 1] << " " << endl;
+    cout << " P" << safeSeq[n_of_processes - 1] << endl;
     return true;
 }
 
