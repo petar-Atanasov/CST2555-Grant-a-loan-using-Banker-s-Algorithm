@@ -18,7 +18,7 @@ const int n_of_resources = 3;
 const int totalOfBank = 50;
 
 //get the values for allocation for safe state
-int allocation[n_of_processes][n_of_resources]={ 
+int allocation[n_of_processes][n_of_resources] = { 
     //here will be the values where deadlock occur  
     {0, 1, 0},      //3 2 0
     {2, 0, 0},      //2 0 2
@@ -28,7 +28,7 @@ int allocation[n_of_processes][n_of_resources]={
 };
 
 // get the values for maximum for safe state
-int maximum[n_of_processes][n_of_resources]={
+int maximum[n_of_processes][n_of_resources] = {
     //here will be the values where deadlock occur
     {7, 5, 3},      //7 5 3
     {3, 2, 2},      //13 2 2 
@@ -48,12 +48,12 @@ bool finish[n_of_processes] = {false};
 
 // create a Need function to get the needed values for the algorithm
 void need(int request_Need[n_of_processes][n_of_resources]){
-        for(int i = 0; i < n_of_processes; i++){
-            for(int j = 0; j < n_of_resources; j++){
-                request_Need[i][j] = maximum[i][j] - allocation[i][j];
-            }
+    for(int i = 0; i < n_of_processes; i++){
+        for(int j = 0; j < n_of_resources; j++){
+            request_Need[i][j] = maximum[i][j] - allocation[i][j];
         }
-};
+    }
+}
 // create a function to check for the safety alorithm 
 bool Safe() {
     int request_Need[n_of_processes][n_of_resources] = {0};
@@ -64,7 +64,7 @@ bool Safe() {
     // initialize work and set it to current available 
     // then loop through the resources
     int work[n_of_resources];
-    for ( int i = 0; i < n_of_resources; i++){
+    for (int i = 0; i < n_of_resources; i++){
         work[i] = current_Available[i];
     }
 
@@ -81,9 +81,7 @@ bool Safe() {
     // initialize a safe sequence value 
     int safeSeq[n_of_processes];
 
-    
-
-    while( count < n_of_processes) {
+    while(count < n_of_processes) {
         // set a boolean value for founded sequence 
         bool found = false;
         for (int i = 0; i < n_of_processes; i++){
@@ -94,8 +92,8 @@ bool Safe() {
                 //step 2
 
                 //check if the recources are enough to proceed further
-                for ( int j = 0; j < n_of_resources; j++){
-                    if(request_Need[i][j] > work[j]){
+                for (int j = 0; j < n_of_resources; j++){
+                    if(request_Need[i][j] >= work[j]){
                         exProcess = false;
                         break;
                     }
@@ -103,7 +101,7 @@ bool Safe() {
                 // step 3 
                 //after the remaining need check if resources are available
                 if (exProcess){
-                    for ( int k = 0; k < n_of_processes; k++){
+                    for (int k = 0; k < n_of_resources; k++){
                         // allocate the resources
                         work[k] += allocation[i][k];
                     }
@@ -118,14 +116,15 @@ bool Safe() {
                 }
             }
         }
+        //step 4 
         // if nothing is true set it to 0 
-        if(!found){
+        if(!found) {
             return false;
         }
     }
     // print the output
     cout << "The SAFE SEQUENCE is: "; 
-    for ( int i = 0; i < n_of_processes - 1; i++){
+    for (int i = 0; i < n_of_processes - 1; i++){
         cout << " P -> " << safeSeq[i] << " ";
     }
     cout << " P -> " << safeSeq[n_of_processes - 1] << " " << endl;
