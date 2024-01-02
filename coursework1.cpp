@@ -5,7 +5,6 @@ Petar Atanasov
 M00916537
 */
 
-
 #include <iostream>
 #include <array>
 
@@ -20,7 +19,7 @@ const int totalOfBank = 50;
 
 //get the values for allocation for safe state
 int allocation[n_of_processes][n_of_resources]={ 
-    // #here will be the values where deadlock occur  
+    //here will be the values where deadlock occur  
     {0, 1, 0},      //3 2 0
     {2, 0, 0},      //2 0 2
     {3, 0, 2},      //3 0 2
@@ -30,11 +29,12 @@ int allocation[n_of_processes][n_of_resources]={
 
 // get the values for maximum for safe state
 int maximum[n_of_processes][n_of_resources]={
-    {7, 5, 3},
-    {3, 2, 2},
-    {9, 0, 2},
-    {4, 2, 2},
-    {5, 3, 3}
+    //here will be the values where deadlock occur
+    {7, 5, 3},      //7 5 3
+    {3, 2, 2},      //13 2 2 
+    {9, 0, 2},      //9 0 2
+    {4, 2, 2},      //10 4 6
+    {5, 3, 3}       //5 3 3
 };
 
 // get the available values for the banker's algorithm
@@ -118,18 +118,24 @@ bool Safe() {
                 }
             }
         }
+        // if nothing is true set it to 0 
         if(!found){
             return false;
         }
     }
-
-
-
-
-
+    // print the output
+    cout << "The SAFE SEQUENCE is: "; 
+    for ( int i = 0; i < n_of_processes - 1; i++){
+        cout << " P -> " << safeSeq[i] << " ";
+    }
+    cout << " P -> " << safeSeq[n_of_processes - 1] << " " << endl;
+    return true;
 }
 
 int main() {
 
-
+ if(!Safe()){
+    cout << " SAFE SEQUENCE not found " << endl;
+ }
+return 0; 
 };
