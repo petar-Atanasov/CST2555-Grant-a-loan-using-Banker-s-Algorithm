@@ -9,32 +9,30 @@ M00916537
 #include <array>
 
 using namespace std;
+
 // number of processes
 const int n_of_processes = 5;
 // number of resources
 const int n_of_resources = 3;
 
-// set the total to the bank
-const int totalOfBank = 50;
-
 //get the values for allocation for safe state
 int allocation[n_of_processes][n_of_resources] = { 
                         //here will be the values where deadlock occur  
-    {0, 1, 0},//P0      //3, 2, 0
-    {2, 0, 0},//P1      //2, 0, 2
-    {3, 0, 2},//P2      //3, 0, 2
-    {2, 1, 1},//P3      //5, 1, 1
-    {0, 0, 2} //P4      //0, 0, 2
+    {0, 1, 0}, //P0      //3, 2, 0
+    {2, 0, 0}, //P1      //2, 0, 2
+    {3, 0, 2}, //P2      //3, 0, 2
+    {2, 1, 1}, //P3      //5, 1, 1
+    {0, 0, 2}  //P4      //0, 10, 2
 };
 
 // get the values for maximum for safe state
 int maximum[n_of_processes][n_of_resources] = {
                         //here will be the values where deadlock occur
-    {7, 5, 3},//P0      //7, 5, 3
-    {3, 2, 2},//P1      //13, 2, 2 
-    {9, 0, 2},//P2      //9, 0, 2
-    {4, 2, 2},//P3      //10, 4, 6
-    {5, 3, 3} //P4      //5, 3, 3
+    {7, 5, 3}, //P0      //7, 5, 3      
+    {3, 2, 2}, //P1      //13, 2, 2 
+    {9, 0, 2}, //P2      //9, 0, 2
+    {4, 2, 2}, //P3      //10, 4, 6
+    {5, 3, 3}  //P4      //5, 3, 3
 };
 
 // get the available values for the banker's algorithm
@@ -54,11 +52,11 @@ void need(int request_Need[n_of_processes][n_of_resources]){
         }
     }
 }
-
+   
 // create a function to check for the safety alorithm 
 bool Safe() {
-    int request_Need[n_of_processes][n_of_resources];
-    need(request_Need);
+   int request_Need[n_of_processes][n_of_resources];
+   need(request_Need);
 
     // step 1
 
@@ -139,13 +137,15 @@ bool Safe() {
     cout << " P" << safeSeq[n_of_processes - 1] << endl;
     return true;
 } 
- bool resource_request ( int request[][n_of_resources]){
-    
+ bool resource_request (int request[][n_of_resources]){
+    int checkNeed[n_of_processes][n_of_resources];
+    need(checkNeed);
+
     // iterate between the procceses 
     for ( int k = 0; k < n_of_processes; k++){
         // check the request exceed it's maximum
         for (int i = 0; i < n_of_resources; i++){
-            if (request[k][i] > need[k][i]){
+            if (request[k][i] > checkNeed[k][i]){
                 cout << "Processes reached its maximum claim" << endl;
                 return false;
             }
@@ -163,7 +163,7 @@ bool Safe() {
         for ( int y = 0; y < n_of_resources; y++){
             current_Available[y] -= request[k][y];
             allocation[k][y] += request[k][y];
-            need[k][y] -= request[k][y];
+            checkNeed[k][y] -= request[k][y];
         }
 
         // based on safety algorithm 
@@ -174,12 +174,12 @@ bool Safe() {
             for(int t = 0; t < n_of_resources; t++){
                 current_Available[t] += request[k][t];
                 allocation[k][t] -= request[k][t];
-                need[k][t] += request[k][t];
+                checkNeed[k][t] += request[k][t];
             }
             return false;
         }
 
-        cout << "Resources allocated succesfully " << endl;
+        cout << "Resources allocated succesfully" << endl;
     }
     return true; 
  }
