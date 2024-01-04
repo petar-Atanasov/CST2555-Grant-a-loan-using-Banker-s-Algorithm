@@ -139,45 +139,48 @@ bool Safe() {
     cout << " P" << safeSeq[n_of_processes - 1] << endl;
     return true;
 } 
- bool resource_request ( int processes[n_of_processes], int request[n_of_resources]){
+ bool resource_request ( int request[][n_of_resources]){
     
-    // check the request exceed it's maximum
-    for (int i = 0; i < n_of_resources; i++){
-        if (request[processes][i] > need[processes][i]){
-            cout << "Processes reached its maximum claim" << endl;
+    // iterate between the procceses 
+    for ( int k = 0; k < n_of_processes; k++){
+        // check the request exceed it's maximum
+        for (int i = 0; i < n_of_resources; i++){
+            if (request[k][i] > need[k][i]){
+                cout << "Processes reached its maximum claim" << endl;
+                return false;
+            }
+        }
+    
+     // check if request it is within available resources 
+        for( int f = 0; f < n_of_resources; f++){
+            if(request[k][f] > current_Available[f]){
+                cout << "Resources aren't available" << endl;
+                return false;
+            }
+        }
+    
+        //pretend to allocate request 
+        for ( int y = 0; y < n_of_resources; y++){
+            current_Available[y] -= request[k][y];
+            allocation[k][y] += request[k][y];
+            need[k][y] -= request[k][y];
+        }
+
+        // based on safety algorithm 
+        if(!Safe()){
+            cout << "UNSAFE STATE." << endl;
+
+            // restore the resource-allocation state
+            for(int t = 0; t < n_of_resources; t++){
+                current_Available[t] += request[k][t];
+                allocation[k][t] -= request[k][t];
+                need[k][t] += request[k][t];
+            }
             return false;
         }
-    }
 
-    // check if request it is within available resources 
-    for( int f = 0; f < n_of_resources; f++){
-        if(request[processes][f] > current_Available[f]){
-            cout << "Resources aren't available" << endl;
-            return false;
-        }
+        cout << "Resources allocated succesfully " << endl;
     }
-    
-    //pretend to allocate request 
-    for ( int y = 0; y < n_of_resources; y++){
-        current_Available[y] -= request[processes][y];
-        allocation[processes][y] += request[processes][y];
-        need[processes][y] -= request[processes][y];
-    }
-
-    // based on safety algorithm 
-    if(!Safe()){
-        cout << "UNSAFE STATE." << endl;
-
-        // restore the resource-allocation state
-        for(int t = 0; t < n_of_resources; t++){
-            current_Available[t] += request[processes][t];
-            allocation[processes][t] -= request[processes][t];
-            need[processes][t] += request[processes][t];
-        }
-        return false;
-    }
-
-    cout << "Resources allocated " << processes << "succesfully " << endl;
     return true; 
  }
 int main() {
