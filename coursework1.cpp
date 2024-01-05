@@ -11,18 +11,18 @@ M00916537
 using namespace std;
 
 // number of processes
-                        // wrong procesess: 4-->3
+                        // wrong procesess: 4-->3 --> 3
 const int n_of_processes = 5;           
 // number of resources
-                        // wrong resourcess: 3-->5
+                        // wrong resourcess: 3-->5-->4
 const int n_of_resources = 3;
 
 //get the values for allocation for safe state
 int allocation[n_of_processes][n_of_resources] = { 
                         //here will be the values where deadlock occur  
-    {0, 1, 0}, //P0      //3, 2, 0      //1, 1, 1       //2, 1, 0     //0, 1, 2, 1, 0
-    {2, 0, 0}, //P1      //2, 0, 2      //2, 2, 2       //3, 0, 2     //1, 2, 1, 0, 0
-    {3, 0, 2}, //P2      //3, 0, 2      //3, 3, 3       //2, 1, 1    //2, 1, 1, 1, 1
+    {0, 1, 0}, //P0      //3, 2, 0      //1, 1, 1       //2, 1, 0     //0, 1, 2, 1, 0    //1, 1, 2, 1
+    {2, 0, 0}, //P1      //2, 0, 2      //2, 2, 2       //3, 0, 2     //1, 2, 1, 0, 0    //2, 0, 1, 1
+    {3, 0, 2}, //P2      //3, 0, 2      //3, 3, 3       //2, 1, 1     //2, 1, 1, 1, 1     //1, 2, 1, 1
     {2, 1, 1}, //P3      //5, 1, 1      //4, 4, 4       //0, 0, 2
     {0, 0, 2}  //P4      //0, 10, 2     //5, 5, 5
 };
@@ -30,15 +30,15 @@ int allocation[n_of_processes][n_of_resources] = {
 // get the values for maximum for safe state
 int maximum[n_of_processes][n_of_resources] = {
                         //here will be the values where deadlock occur
-    {7, 5, 3}, //P0      //7, 5, 3      //6, 6, 6       //7, 5, 3   //2, 2, 2, 2, 2
-    {3, 2, 2}, //P1      //13, 2, 2     //7, 7, 7       //3, 2, 2   //2, 3, 2, 1, 2  
-    {9, 0, 2}, //P2      //9, 0, 2      //8, 8, 8       //9, 0, 2   //3, 2, 2, 9, 2
+    {7, 5, 3}, //P0      //7, 5, 3      //6, 6, 6       //7, 5, 3   //2, 2, 2, 2, 2      //2, 2, 2, 2
+    {3, 2, 2}, //P1      //13, 2, 2     //7, 7, 7       //3, 2, 2   //2, 3, 2, 1, 2      //3, 1, 3, 2
+    {9, 0, 2}, //P2      //9, 0, 2      //8, 8, 8       //9, 0, 2   //3, 2, 2, 9, 2       //2, 3, 2, 2
     {4, 2, 2}, //P3      //10, 4, 6     //8, 8, 8       //4, 2, 2
     {5, 3, 3}  //P4      //5, 3, 3      //9, 9, 9
 };
 
 // get the available values for the banker's algorithm
-                        // wrong inputs: 2, 6, 2, 2, 6
+                        // wrong inputs: 2, 6, 2, 2, 6 --> 1, 0, 1, 2 
 int current_Available[n_of_resources] = {3, 3, 2};
 // track the processes if they are finished or not 
 bool finish[n_of_processes] = {false};
@@ -107,7 +107,7 @@ bool Safe() {
                     // the process is finished
                     copyOfFinish[i] = true;
                     // set the safe sequence array with the count increment
-                    //and assigning variable i to it
+                    //and assigning the process to it
                     safeSeq[count++] = i;
                     found = true;
                 }
@@ -145,7 +145,6 @@ bool Safe() {
         // check the request exceed it's maximum
         for (int j = 0; j < n_of_resources; j++){
             if (request[i][j] > checkNeed[i][j]){
-                cout << "Processes reached its maximum claim" << endl;
                 return false;
             }
         }
@@ -153,7 +152,6 @@ bool Safe() {
      //step 2 --> check if request it is within available resources 
         for(int j = 0; j < n_of_resources; j++){
             if(request[i][j] > current_Available[j]){
-                cout << "Resources aren't available" << endl;
                 return false;
             }
         }
@@ -186,6 +184,14 @@ int main() {
 
  if(!Safe()){
     cout << " SAFE SEQUENCE not found " << endl;
+ }                  // values for not found seq: 1, 0, 1, 0
+ int process_request[n_of_resources] = {1, 0, 1};
+
+ int checkRequest[n_of_processes][n_of_resources];
+ for(int i = 0; i < n_of_resources; i++){
+    checkRequest[0][i] = process_request[i];
  }
+ bool request_granted = resource_request(checkRequest);
+
 return 0; 
 };
